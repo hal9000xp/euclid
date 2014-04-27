@@ -1,0 +1,2 @@
+#include "selftest/test_network.h"
+    module_add( "selftest", net_test_cfg_init, net_test_init );

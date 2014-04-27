@@ -1,0 +1,2 @@
+#include "proxy/proxy.h"
+    module_add( "proxy", proxy_cfg_init, proxy_init );

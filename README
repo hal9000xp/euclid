@@ -1,0 +1,90 @@
+
+ E(u)clid
+
+ Version: Apr 2014
+ Author:  Eldar Gaynetdinov
+ License: ISC
+
+ DESCRIPTION:
+ ------------
+
+ E(u)clid (further in text called Euclid) is the minimalist style framework 
+ which provides the following features:
+
+ * event-driven engine based on epoll (SSL connections also supported)
+ * client and limited server behaviour
+ * buffering network IO
+ * global and connection based timers
+ * modularity
+ * logging
+ * limited support of HTTP 1.1 (permanent connections also supported)
+ * fixed point arithmetic
+ * YAML based config parser
+ * linked lists, hash tables etc
+
+ PHILOSOPHY:
+ -----------
+
+ Keep it thin. Don't use a lot of libraries except stdlib.
+ At the moment there are only three exeptions (OpenSSL, zlib, crc32).
+ Provide enough functionality and scalability but stay in the minimalist style.
+
+ WHY IT EXIST?
+ -------------
+
+ This is the public part of my own project which I will use for 
+ algorithmic trading at NYSE, NASDAQ, CME etc.
+ I don't like huge libraries and frameworks.
+ That's why I decided to write my own framework.
+ I share it because somebody may find this framework interesting and useful.
+ The name Euclid is inspired by Darren Aronofsky's film Pi.
+ After I wrote event-driven engine I noticed similarity between 
+ (Eu)clid and (Ev)ent. That's why I call it E(u)clid.
+
+ BUILD:
+ ------
+
+ You need a Linux environment with installed OpenSSL and zlib dev packages.
+
+ 1) To build debug version:
+
+ $ make
+
+ 2) To build release version:
+
+ $ make release
+
+ 3) To build debug version which is intended for proxy module:
+
+ $ make test_many_conns
+
+ NOTE: http proxy module is intended for testing this framework.
+ But I still don't implemented support for many connections.
+ That means it's needed O(n) to traverse all the connections.
+ That's why in normal mode, I don't support many connections.
+
+ 4) To cleanup:
+
+ $ make clean
+
+ GETTING STARTED
+ ---------------
+
+ 1) $ make test_many_conns
+
+ 2) point out your browser to: localhost:1111
+
+ NOTE: http proxy supports SSL connections and HTTP method CONNECT.
+ So it's possible to point out another protocols 
+ (try to use Pidgin IM through this proxy).
+
+ 3) $ ./euclid module:proxy no_debug_log
+
+ 4) Enjoy!
+
+ To move logging to file. Invoke this before running ./euclid
+
+ $ ./core/make_tmpfs_logging_dir.sh
+
+ It creates a temporary directory in tmpfs. It's useful with debug logging.
+
