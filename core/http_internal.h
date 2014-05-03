@@ -16,13 +16,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.   *
  ********************************************************************/
 
-#define IS_PRINTABLE_ASCII( c )         ( c >= 32 && c <= 126 )
-#define IS_DIGIT( c )                   ( c >= '0' && c <= '9' )
-
-#define IS_HEX( c )                     ( IS_DIGIT( c )             || \
-                                          ( c >= 'a' && c <= 'f' )  || \
-                                          ( c >= 'A' && c <= 'F' ) )
-
 #define HTTP_DEFAULT_PORT               80
 #define HTTP_DEFAULT_SSL_PORT           443
 
