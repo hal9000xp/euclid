@@ -28,7 +28,6 @@
 #include "logger.h"
 #include "network.h"
 #include "http.h"
-#include "http_internal.h"
 #include "proxy.h"
 #include "proxy_internal.h"
 
