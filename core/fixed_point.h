@@ -18,6 +18,8 @@
 
 typedef int64_t                     fxp_num_t;
 
+#define FXP_FMT( fxp )              ( (long long int) (fxp) )
+
 #define FXP_DEFAULT_PREC            1000000
 
 #define FXP_MAKE_VP( i, f, p )      ( (i) < 0 ? ((i) * (p)) - (f) : \

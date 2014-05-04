@@ -29,7 +29,7 @@
  At the moment there are only three exeptions (OpenSSL, zlib, crc32).
  Provide enough functionality and scalability but stay in the minimalist style.
 
- WHY IT EXIST?
+ WHY IT EXISTS?
  -------------
 
  This is the public part of my personal project which I will use 

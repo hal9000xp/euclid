@@ -215,7 +215,9 @@ fxp_rc_t str2fxp_vp( fxp_num_t     *fxp,
     if( f_part )
         *f_part = fpart;
 
-    /* TODO: debug log here: ipart, fpart, fxp, rc */
+    LOGD( "str:%.*s i_part:%lld f_part:%lld fxp:%lld rc:%d",
+          len, s, FXP_FMT( ipart ), FXP_FMT( fpart ),
+          FXP_FMT( *fxp ), rc );
 
     return rc;
 }
