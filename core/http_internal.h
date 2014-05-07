@@ -19,8 +19,7 @@
 #define HTTP_DEFAULT_PORT               80
 #define HTTP_DEFAULT_SSL_PORT           443
 
-/* NOTE: http://goo.gl/0Utnvq */
-#define HTTP_HDR_MAX_LINE_LEN           4096
+#define HTTP_HDR_MAX_LINE_LEN           16384
 
 #define HTTP_HDR_MAX_LINES              128
 
