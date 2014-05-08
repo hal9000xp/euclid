@@ -161,6 +161,9 @@ net_host_t *net_get_host( ll_t             *host_list,
 extern char                *cfg_net_cert_file;
 extern char                *cfg_net_key_file;
 
+extern char                *cfg_net_cert_test_file;
+extern char                *cfg_net_key_test_file;
+
 extern struct timeval      *cfg_net_ssl_shutdown_timeout;
 extern struct timeval      *cfg_net_ssl_establish_timeout;
 extern struct timeval      *cfg_net_ssl_accept_timeout;

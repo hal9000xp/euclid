@@ -33,6 +33,9 @@ static struct timeval   g_iter_time;
 char                   *cfg_net_cert_file = NULL;
 char                   *cfg_net_key_file = NULL;
 
+char                   *cfg_net_cert_test_file = NULL;
+char                   *cfg_net_key_test_file = NULL;
+
 struct timeval         *cfg_net_ssl_shutdown_timeout = NULL;
 struct timeval         *cfg_net_ssl_establish_timeout = NULL;
 struct timeval         *cfg_net_ssl_accept_timeout = NULL;
@@ -2743,14 +2746,14 @@ net_state_t net_is_est_conn( conn_id_t conn_id )
 
 static void __default_config_init()
 {
-    if( !cfg_net_cert_file )
+    if( !cfg_net_cert_test_file )
     {
-        cfg_net_cert_file = strdup( "core/server.crt" );
+        cfg_net_cert_test_file = strdup( "core/server_test.crt" );
     }
 
-    if( !cfg_net_key_file )
+    if( !cfg_net_key_test_file )
     {
-        cfg_net_key_file = strdup( "core/server.key" );
+        cfg_net_key_test_file = strdup( "core/server_test.key" );
     }
 
     if( !cfg_net_ssl_shutdown_timeout )
@@ -2815,17 +2818,53 @@ void net_init()
     g_ssl_server_ctx = SSL_CTX_new( SSLv23_server_method() );
     c_assert( g_ssl_server_ctx );
 
-    r = SSL_CTX_use_certificate_file( g_ssl_server_ctx,
-                                      cfg_net_cert_file,
-                                      SSL_FILETYPE_PEM );
+    if( cfg_net_key_file )
+    {
+        c_assert( cfg_net_cert_file );
 
-    c_assert( r == 1 );
+        r = SSL_CTX_use_certificate_file( g_ssl_server_ctx,
+                                          cfg_net_cert_file,
+                                          SSL_FILETYPE_PEM );
 
-    r = SSL_CTX_use_PrivateKey_file( g_ssl_server_ctx,
-                                     cfg_net_key_file,
-                                     SSL_FILETYPE_PEM );
+        c_assert( r == 1 );
 
-    c_assert( r == 1 );
+        r = SSL_CTX_use_PrivateKey_file( g_ssl_server_ctx,
+                                         cfg_net_key_file,
+                                         SSL_FILETYPE_PEM );
+
+        c_assert( r == 1 );
+    }
+    else
+    {
+        c_assert( cfg_net_key_test_file &&
+                  cfg_net_cert_test_file );
+
+        r = SSL_CTX_use_certificate_file( g_ssl_server_ctx,
+                                          cfg_net_cert_test_file,
+                                          SSL_FILETYPE_PEM );
+
+        c_assert( r == 1 );
+
+        r = SSL_CTX_use_PrivateKey_file( g_ssl_server_ctx,
+                                         cfg_net_key_test_file,
+                                         SSL_FILETYPE_PEM );
+
+        c_assert( r == 1 );
+
+        char        warn_buf[1024];
+
+        snprintf( warn_buf, sizeof(warn_buf),
+                "***********************************************************\n"
+                "* WARNING: A PRODUCTION PRIVATE KEY FILE WAS NOT FOUND!!! *\n"
+                "*               !!!USING THROWAWAY PRIVATE KEY!!!         *\n"
+                "***********************************************************"
+                );
+
+        printf( "%s\n", warn_buf );
+
+        /* NOTE: duplicate warning to log with ERROR log level */
+        LOGE( "\n%s", warn_buf );
+    }
 
     r = SSL_CTX_check_private_key( g_ssl_server_ctx );
     c_assert( r == 1 );

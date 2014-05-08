@@ -1307,6 +1307,14 @@ static void __register_cmds()
                (void **) &cfg_net_key_file,
                __string_cb );
 
+    __add_cmd( "net_cert_test_file", SCALAR,
+               (void **) &cfg_net_cert_test_file,
+               __string_cb );
+
+    __add_cmd( "net_key_test_file", SCALAR,
+               (void **) &cfg_net_key_test_file,
+               __string_cb );
+
     __add_cmd( "net_ssl_shutdown_timeout", MAPPINGS_BLOCK,
                (void **) &cfg_net_ssl_shutdown_timeout,
                __timeval_cb );

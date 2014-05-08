@@ -88,3 +88,25 @@
 
  It creates a temporary directory in tmpfs. It's useful with debug logging.
 
+ SECURITY WARNING:
+ -----------------
+
+ Please, generate and add your own private key and cert to 
+ core/core.cfg by adding:
+
+ #######
+ net_cert_file: [path to cert file].crt
+
+ net_key_file: [path to key file].key
+ #######
+
+ Otherwise, a throwaway key is used for tests. See core/core.cfg :
+
+ #######
+ net_cert_test_file: core/server_test.crt
+
+ net_key_test_file: core/server_test.key
+ #######
+
+ Also, you will get a warning message when Euclid started.
+
