@@ -34,6 +34,7 @@
 #define HTTP_USER_AGENT_LEN     (sizeof(HTTP_USER_AGENT) - 1)
 
 #define DEFAULT_HOST                    "localhost"
+#define DEFAULT_HOST_LEN                (sizeof(DEFAULT_HOST) - 1)
 
 #define HTTP_HDR_MAX_LEN                65536
 

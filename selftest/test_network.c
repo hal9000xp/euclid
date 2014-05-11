@@ -431,7 +431,7 @@ static void __init_http_msg( http_msg_t *http_msg )
     memset( http_msg, 0, sizeof(http_msg_t) );
 
     http_msg->host = DEFAULT_HOST;
-    http_msg->host_len = sizeof(DEFAULT_HOST) - 1;
+    http_msg->host_len = DEFAULT_HOST_LEN;
 
     http_msg->user_agent = HTTP_USER_AGENT;
     http_msg->user_agent_len = HTTP_USER_AGENT_LEN;
