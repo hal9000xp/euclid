@@ -411,11 +411,14 @@ static int __set_www_form_pair( hash_table_t   *hash_table,
         decoded_val_len = 0;
     }
 
+    char   *duped_decoded_val;
+
+    duped_decoded_val = strndup( decoded_val, decoded_val_len );
+
     hash_table_set_pair( hash_table,
                          decoded_key,
                          decoded_key_len,
-                         decoded_val,
-                         decoded_val_len );
+                         duped_decoded_val );
 
     return 0;
 }
@@ -3638,7 +3641,7 @@ hash_table_t *http_parse_www_form( char    *form,
         if( !q_mark ||
             q_mark >= &form[form_len - HTTP_WWW_FORM_MIN_LEN] )
         {
-            hash_table_destroy( hash_table );
+            hash_table_destroy( hash_table, free );
             return NULL;
         }
 
@@ -3668,7 +3671,7 @@ hash_table_t *http_parse_www_form( char    *form,
 
         if( !IS_PRINTABLE_ASCII( form[i] ) )
         {
-            hash_table_destroy( hash_table );
+            hash_table_destroy( hash_table, free );
             return NULL;
         }
 
@@ -3678,7 +3681,7 @@ hash_table_t *http_parse_www_form( char    *form,
 
                 if( form[i] == '&' )
                 {
-                    hash_table_destroy( hash_table );
+                    hash_table_destroy( hash_table, free );
                     return NULL;
                 }
 
@@ -3686,7 +3689,7 @@ hash_table_t *http_parse_www_form( char    *form,
                 {
                     if( form[i] == '=' || is_last )
                     {
-                        hash_table_destroy( hash_table );
+                        hash_table_destroy( hash_table, free );
                         return NULL;
                     }
 
@@ -3708,7 +3711,7 @@ hash_table_t *http_parse_www_form( char    *form,
 
                 if( form[i] == '=' )
                 {
-                    hash_table_destroy( hash_table );
+                    hash_table_destroy( hash_table, free );
                     return NULL;
                 }
 
@@ -3733,7 +3736,7 @@ hash_table_t *http_parse_www_form( char    *form,
                                                  key, key_len,
                                                  val, val_len ) )
                         {
-                            hash_table_destroy( hash_table );
+                            hash_table_destroy( hash_table, free );
                             return NULL;
                         }
 
@@ -3758,7 +3761,7 @@ hash_table_t *http_parse_www_form( char    *form,
         {
             if( !key_len )
             {
-                hash_table_destroy( hash_table );
+                hash_table_destroy( hash_table, free );
                 return NULL;
             }
 
@@ -3771,7 +3774,7 @@ hash_table_t *http_parse_www_form( char    *form,
                                      key, key_len,
                                      val, val_len ) )
             {
-                hash_table_destroy( hash_table );
+                hash_table_destroy( hash_table, free );
                 return NULL;
             }
         }

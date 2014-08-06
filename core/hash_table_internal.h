@@ -23,6 +23,6 @@ typedef struct {
     ptr_id_t        next;
 
     char           *key;
-    char           *val;
+    void           *val;
 } hash_pair_t;
 

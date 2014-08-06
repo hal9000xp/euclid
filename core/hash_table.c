@@ -24,10 +24,10 @@
 
 /******************* Mics functions *******************************************/
 
-static ll_t *__find_elt( hash_pair_t  **pair,
-                         hash_table_t  *table,
-                         char          *key,
-                         int            key_len )
+static ll_t *__find_elt( hash_pair_t      **pair,
+                         hash_table_t      *table,
+                         char              *key,
+                         int                key_len )
 {
     ll_t           *ll;
     hash_pair_t    *pr;
@@ -85,7 +85,8 @@ hash_table_t *hash_table_create( int    n_elts )
     return table;
 }
 
-void hash_table_destroy( hash_table_t  *table )
+void hash_table_destroy( hash_table_t      *table,
+                         void            ( *destr_cb )( void *val ) )
 {
     hash_pair_t    *pair;
     hash_pair_t    *pair_next;
@@ -114,8 +115,8 @@ void hash_table_destroy( hash_table_t  *table )
             c_assert( pair->key );
             free( pair->key );
 
-            if( pair->val )
-                free( pair->val );
+            if( pair->val && destr_cb )
+                destr_cb( pair->val );
 
             memset( pair, 0, sizeof(hash_pair_t) );
             free( pair );
@@ -130,54 +131,55 @@ void hash_table_destroy( hash_table_t  *table )
     free( table );
 }
 
-bool hash_table_set_pair( hash_table_t     *table,
-                          char             *key,
-                          int               key_len,
-                          char             *val,
-                          int               val_len )
+void *hash_table_set_pair( hash_table_t    *table,
+                           char            *key,
+                           int              key_len,
+                           void            *val )
 {
     ll_t           *ll;
     hash_pair_t    *pair;
-    bool            is_rewritten = false;
+    void           *prev_val;
 
     c_assert( table && table->n > 0 &&
               table->t && key && key_len > 0 );
-
-    c_assert( (!val && !val_len) || (val && val_len > 0) );
 
     ll = __find_elt( &pair, table, key, key_len );
 
     if( pair )
     {
-        if( pair->val )
+        if( !pair->val && val )
         {
-            free( pair->val );
-
-            is_rewritten = true;
+            table->val_count++;
+        }
+        else
+        if( pair->val && !val )
+        {
+            table->val_count--;
+            c_assert( table->val_count >= 0 );
         }
 
-        if( val )
-            pair->val = strndup( val, val_len );
-        else
-            pair->val = NULL;
+        prev_val = pair->val;
+        pair->val = val;
     }
     else
     {
+        if( val ) table->val_count++;
+
         pair = malloc( sizeof(hash_pair_t) );
         memset( pair, 0, sizeof(hash_pair_t) );
 
         pair->key = strndup( key, key_len );
 
-        if( val )
-            pair->val = strndup( val, val_len );
+        prev_val = NULL;
+        pair->val = val;
 
         LL_ADD_NODE( ll, pair );
     }
 
-    return is_rewritten;
+    return prev_val;
 }
 
-char *hash_table_get_val( hash_table_t     *table,
+void *hash_table_get_val( hash_table_t     *table,
                           char             *key,
                           int               key_len )
 {
@@ -192,5 +194,95 @@ char *hash_table_get_val( hash_table_t     *table,
         return NULL;
 
     return pair->val;
+}
+
+hash_table_iter_t *hash_table_create_iter( hash_table_t *table )
+{
+    hash_table_iter_t  *iter;
+
+    iter = malloc( sizeof(hash_table_iter_t) );
+    memset( iter, 0, sizeof(hash_table_iter_t) );
+
+    iter->table = table;
+
+    return iter;
+}
+
+void *hash_table_get_next_val( hash_table_iter_t *iter )
+{
+    c_assert( iter && iter->table &&
+              iter->ndx < iter->table->n );
+
+    /* NOTE: it's already reached end of the table */
+    if( iter->ndx == -1 )
+    {
+        c_assert( !iter->elt_id );
+        return NULL;
+    }
+
+    c_assert( iter->elt_id || !iter->ndx );
+
+    ll_t           *ll;
+    hash_pair_t    *pr;
+
+    pr = PTRID_GET_PTR( iter->elt_id );
+
+    if( pr )
+    {
+        ll = &iter->table->t[iter->ndx];
+
+        c_assert( ll->total && pr->key && pr->val );
+
+        pr = PTRID_GET_PTR( pr->next );
+
+        while( pr )
+        {
+            c_assert( pr->key );
+
+            if( pr->val )
+            {
+                iter->elt_id = pr->id;
+                return pr->val;
+            }
+
+            pr = PTRID_GET_PTR( pr->next );
+        }
+
+        iter->ndx++;
+    }
+
+    iter->elt_id = 0;
+
+    while( iter->ndx < iter->table->n )
+    {
+        ll = &iter->table->t[iter->ndx];
+
+        if( ll->total )
+        {
+            LL_CHECK( ll, ll->head );
+
+            pr = PTRID_GET_PTR( ll->head );
+
+            while( pr )
+            {
+                c_assert( pr->key );
+
+                if( pr->val )
+                {
+                    iter->elt_id = pr->id;
+                    return pr->val;
+                }
+
+                pr = PTRID_GET_PTR( pr->next );
+            }
+        }
+
+        iter->ndx++;
+    }
+
+    /* NOTE: mark that it's reached end of the table */
+    iter->ndx = -1;
+
+    return NULL;
 }
 

@@ -17,21 +17,32 @@
  ********************************************************************/
 
 typedef struct {
-    int         n;
-    ll_t       *t;
+    int                     n;
+    ll_t                   *t;
+    int                     val_count;
 } hash_table_t;
+
+typedef struct {
+    hash_table_t           *table;
+    int                     ndx;
+    ptr_id_t                elt_id;
+} hash_table_iter_t;
 
 hash_table_t   *hash_table_create( int              n_elts );
 
-void            hash_table_destroy( hash_table_t   *table );
+void            hash_table_destroy( hash_table_t   *table,
+                                    void         ( *destr_cb )( void *val ) );
 
-bool            hash_table_set_pair( hash_table_t  *table,
+void           *hash_table_set_pair( hash_table_t  *table,
                                      char          *key,
                                      int            key_len,
-                                     char          *val,
-                                     int            val_len );
+                                     void          *val );
 
-char           *hash_table_get_val( hash_table_t   *table,
+void           *hash_table_get_val( hash_table_t   *table,
                                     char           *key,
                                     int             key_len );
+
+void           *hash_table_get_next_val( hash_table_iter_t *iter );
+
+hash_table_iter_t *hash_table_create_iter( hash_table_t *table );
 
